@@ -15,8 +15,11 @@ String friendlySignLabel(String label) {
       return '✌️ Peace';
     case 'thumbs_up':
       return '👍 Thumbs Up';
+<<<<<<< HEAD
     case 'i_love_you':
       return '🤟 I Love You';
+=======
+>>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
     default:
       return label;
   }
@@ -35,8 +38,11 @@ String spokenSignLabel(String label) {
       return 'Peace';
     case 'thumbs_up':
       return 'Thumbs up';
+<<<<<<< HEAD
     case 'i_love_you':
       return 'I love you';
+=======
+>>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
     default:
       return label.replaceAll('_', ' ');
   }

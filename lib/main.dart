@@ -747,6 +747,7 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   // ==========================================================================
+<<<<<<< HEAD
   // "I LOVE YOU" SIGN (rule based, no model retraining needed)
   //
   // The sign is: thumb, index finger and pinky stick out; middle and ring
@@ -822,6 +823,8 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   // ==========================================================================
+=======
+>>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
   // RUN THE TFLITE MODEL ON ONE FEATURE VECTOR
   // ==========================================================================
 
@@ -1042,6 +1045,7 @@ class _CameraScreenState extends State<CameraScreen> {
       // STEP 7: DISPLAY RESULT
       // ======================================================================
 
+<<<<<<< HEAD
       final iLoveYouShare = _iLoveYouShare(frames);
 
       debugPrint(
@@ -1060,6 +1064,9 @@ class _CameraScreenState extends State<CameraScreen> {
         _saveToHistory(iLoveYouLabel, iLoveYouShare);
         _speak(iLoveYouLabel);
       } else if (bestScore >= confidenceThreshold) {
+=======
+      if (bestScore >= confidenceThreshold) {
+>>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
         setState(() {
           _prediction =
               _friendlyLabel(
@@ -1203,9 +1210,12 @@ class _CameraScreenState extends State<CameraScreen> {
       case 'thumbs_up':
         return '👍 Thumbs Up';
 
+<<<<<<< HEAD
       case 'i_love_you':
         return '🤟 I Love You';
 
+=======
+>>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
       default:
         return label;
     }
@@ -1552,9 +1562,13 @@ class _CameraScreenState extends State<CameraScreen> {
           // APP TITLE
           // ===================================================================
 
+<<<<<<< HEAD
           Align(
             alignment: Alignment.topCenter,
             child: SafeArea(
+=======
+          SafeArea(
+>>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(
@@ -1562,6 +1576,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 vertical: 12,
               ),
               child: Row(
+<<<<<<< HEAD
                 crossAxisAlignment:
                     CrossAxisAlignment.start,
                 children: [
@@ -1569,6 +1584,11 @@ class _CameraScreenState extends State<CameraScreen> {
                     child: Column(
                       mainAxisSize:
                           MainAxisSize.min,
+=======
+                children: [
+                  const Expanded(
+                    child: Column(
+>>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
                       crossAxisAlignment:
                           CrossAxisAlignment
                               .start,
@@ -1595,6 +1615,24 @@ class _CameraScreenState extends State<CameraScreen> {
                     ),
                   ),
 
+<<<<<<< HEAD
+=======
+                  _roundIconButton(
+                    tooltip: _soundOn ? 'Sound on' : 'Sound off',
+                    icon: _soundOn
+                        ? Icons.volume_up_rounded
+                        : Icons.volume_off_rounded,
+                    onPressed: () {
+                      setState(() => _soundOn = !_soundOn);
+                      if (!_soundOn) _tts.stop();
+                    },
+                  ),
+
+                  const SizedBox(
+                    width: 10,
+                  ),
+
+>>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
                   Container(
                     width: 44,
                     height: 44,
@@ -1616,6 +1654,7 @@ class _CameraScreenState extends State<CameraScreen> {
                           Colors.indigo,
                     ),
                   ),
+<<<<<<< HEAD
 
                   const SizedBox(
                     width: 10,
@@ -1631,11 +1670,16 @@ class _CameraScreenState extends State<CameraScreen> {
                       if (!_soundOn) _tts.stop();
                     },
                   ),
+=======
+>>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
                 ],
               ),
             ),
           ),
+<<<<<<< HEAD
           ),
+=======
+>>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
 
           // ===================================================================
           // HAND GUIDE
