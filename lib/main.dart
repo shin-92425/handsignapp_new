@@ -747,7 +747,6 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   // ==========================================================================
-<<<<<<< HEAD
   // "I LOVE YOU" SIGN (rule based, no model retraining needed)
   //
   // The sign is: thumb, index finger and pinky stick out; middle and ring
@@ -823,8 +822,69 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   // ==========================================================================
-=======
->>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
+  // "OK" SIGN (rule based)
+  //
+  // Thumb tip and index tip touch to make a circle; middle, ring and pinky
+  // fingers are stretched out.
+  // ==========================================================================
+
+  static const String okLabel = 'ok';
+
+  // Thumb tip <-> index tip distance / palm size must be at most this.
+  static const double _okPinchRatio = 0.35;
+
+  static const double _okMinShare = 0.6;
+
+  bool _isOkFeatures(List<double> f) {
+    double d(int a, int b) {
+      final dx = f[a * 3] - f[b * 3];
+      final dy = f[a * 3 + 1] - f[b * 3 + 1];
+      return math.sqrt(dx * dx + dy * dy);
+    }
+
+    final palm = d(0, 9);
+
+    if (palm < 1e-6) {
+      return false;
+    }
+
+    double reach(int tip, int knuckle) {
+      final base = d(0, knuckle);
+      return base < 1e-6 ? 0.0 : d(0, tip) / base;
+    }
+
+    final pinched = d(4, 8) / palm <= _okPinchRatio;
+    final middleOut = reach(12, 9) >= _fingerExtendedRatio;
+    final ringOut = reach(16, 13) >= _fingerExtendedRatio;
+    final pinkyOut = reach(20, 17) >= _fingerExtendedRatio;
+
+    return pinched && middleOut && ringOut && pinkyOut;
+  }
+
+  /// Fraction (0..1) of [frames] that look like the "OK" sign.
+  double _okShare(List<Hand> frames) {
+    if (frames.isEmpty) {
+      return 0.0;
+    }
+
+    int matches = 0;
+
+    for (final frame in frames) {
+      try {
+        final features = _landmarksToFeatures(frame, mirror: false);
+
+        if (_isOkFeatures(features)) {
+          matches++;
+        }
+      } catch (_) {
+        // Ignore a bad frame.
+      }
+    }
+
+    return matches / frames.length;
+  }
+
+  // ==========================================================================
   // RUN THE TFLITE MODEL ON ONE FEATURE VECTOR
   // ==========================================================================
 
@@ -1045,11 +1105,16 @@ class _CameraScreenState extends State<CameraScreen> {
       // STEP 7: DISPLAY RESULT
       // ======================================================================
 
-<<<<<<< HEAD
       final iLoveYouShare = _iLoveYouShare(frames);
 
       debugPrint(
         'I LOVE YOU share: ${iLoveYouShare.toStringAsFixed(2)}',
+      );
+
+      final okShare = _okShare(frames);
+
+      debugPrint(
+        'OK share: ${okShare.toStringAsFixed(2)}',
       );
 
       if (iLoveYouShare >= _iLoveYouMinShare) {
@@ -1063,10 +1128,18 @@ class _CameraScreenState extends State<CameraScreen> {
 
         _saveToHistory(iLoveYouLabel, iLoveYouShare);
         _speak(iLoveYouLabel);
+      } else if (okShare >= _okMinShare) {
+        setState(() {
+          _prediction = _friendlyLabel(okLabel);
+
+          _confidence = okShare;
+
+          _statusMessage = 'Recognition complete!';
+        });
+
+        _saveToHistory(okLabel, okShare);
+        _speak(okLabel);
       } else if (bestScore >= confidenceThreshold) {
-=======
-      if (bestScore >= confidenceThreshold) {
->>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
         setState(() {
           _prediction =
               _friendlyLabel(
@@ -1210,12 +1283,12 @@ class _CameraScreenState extends State<CameraScreen> {
       case 'thumbs_up':
         return '👍 Thumbs Up';
 
-<<<<<<< HEAD
       case 'i_love_you':
         return '🤟 I Love You';
 
-=======
->>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
+      case 'ok':
+        return '👌 OK';
+
       default:
         return label;
     }
@@ -1562,13 +1635,9 @@ class _CameraScreenState extends State<CameraScreen> {
           // APP TITLE
           // ===================================================================
 
-<<<<<<< HEAD
           Align(
             alignment: Alignment.topCenter,
             child: SafeArea(
-=======
-          SafeArea(
->>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(
@@ -1576,7 +1645,6 @@ class _CameraScreenState extends State<CameraScreen> {
                 vertical: 12,
               ),
               child: Row(
-<<<<<<< HEAD
                 crossAxisAlignment:
                     CrossAxisAlignment.start,
                 children: [
@@ -1584,11 +1652,6 @@ class _CameraScreenState extends State<CameraScreen> {
                     child: Column(
                       mainAxisSize:
                           MainAxisSize.min,
-=======
-                children: [
-                  const Expanded(
-                    child: Column(
->>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
                       crossAxisAlignment:
                           CrossAxisAlignment
                               .start,
@@ -1615,24 +1678,6 @@ class _CameraScreenState extends State<CameraScreen> {
                     ),
                   ),
 
-<<<<<<< HEAD
-=======
-                  _roundIconButton(
-                    tooltip: _soundOn ? 'Sound on' : 'Sound off',
-                    icon: _soundOn
-                        ? Icons.volume_up_rounded
-                        : Icons.volume_off_rounded,
-                    onPressed: () {
-                      setState(() => _soundOn = !_soundOn);
-                      if (!_soundOn) _tts.stop();
-                    },
-                  ),
-
-                  const SizedBox(
-                    width: 10,
-                  ),
-
->>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
                   Container(
                     width: 44,
                     height: 44,
@@ -1654,7 +1699,6 @@ class _CameraScreenState extends State<CameraScreen> {
                           Colors.indigo,
                     ),
                   ),
-<<<<<<< HEAD
 
                   const SizedBox(
                     width: 10,
@@ -1670,16 +1714,11 @@ class _CameraScreenState extends State<CameraScreen> {
                       if (!_soundOn) _tts.stop();
                     },
                   ),
-=======
->>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
                 ],
               ),
             ),
           ),
-<<<<<<< HEAD
           ),
-=======
->>>>>>> 7f3ece92afdd33cf291d9e17af4ab6d8d6ef4857
 
           // ===================================================================
           // HAND GUIDE
