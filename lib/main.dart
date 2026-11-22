@@ -885,6 +885,71 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   // ==========================================================================
+  // "CALL ME" SIGN (rule based)
+  //
+  // Thumb and pinky stick out like a phone; index, middle and ring fingers
+  // are folded down.
+  // ==========================================================================
+
+  static const String callMeLabel = 'call_me';
+
+  static const double _callMeMinShare = 0.6;
+
+  bool _isCallMeFeatures(List<double> f) {
+    double d(int a, int b) {
+      final dx = f[a * 3] - f[b * 3];
+      final dy = f[a * 3 + 1] - f[b * 3 + 1];
+      return math.sqrt(dx * dx + dy * dy);
+    }
+
+    final palm = d(0, 9);
+
+    if (palm < 1e-6) {
+      return false;
+    }
+
+    double reach(int tip, int knuckle) {
+      final base = d(0, knuckle);
+      return base < 1e-6 ? 0.0 : d(0, tip) / base;
+    }
+
+    final thumbOut = d(4, 5) / palm >= _thumbOutRatio;
+    final pinkyOut = reach(20, 17) >= _fingerExtendedRatio;
+    final indexFolded = reach(8, 5) <= _fingerFoldedRatio;
+    final middleFolded = reach(12, 9) <= _fingerFoldedRatio;
+    final ringFolded = reach(16, 13) <= _fingerFoldedRatio;
+
+    return thumbOut &&
+        pinkyOut &&
+        indexFolded &&
+        middleFolded &&
+        ringFolded;
+  }
+
+  /// Fraction (0..1) of [frames] that look like the "Call me" sign.
+  double _callMeShare(List<Hand> frames) {
+    if (frames.isEmpty) {
+      return 0.0;
+    }
+
+    int matches = 0;
+
+    for (final frame in frames) {
+      try {
+        final features = _landmarksToFeatures(frame, mirror: false);
+
+        if (_isCallMeFeatures(features)) {
+          matches++;
+        }
+      } catch (_) {
+        // Ignore a bad frame.
+      }
+    }
+
+    return matches / frames.length;
+  }
+
+  // ==========================================================================
   // RUN THE TFLITE MODEL ON ONE FEATURE VECTOR
   // ==========================================================================
 
@@ -1113,6 +1178,12 @@ class _CameraScreenState extends State<CameraScreen> {
 
       final okShare = _okShare(frames);
 
+      final callMeShare = _callMeShare(frames);
+
+      debugPrint(
+        'CALL ME share: ${callMeShare.toStringAsFixed(2)}',
+      );
+
       debugPrint(
         'OK share: ${okShare.toStringAsFixed(2)}',
       );
@@ -1128,6 +1199,17 @@ class _CameraScreenState extends State<CameraScreen> {
 
         _saveToHistory(iLoveYouLabel, iLoveYouShare);
         _speak(iLoveYouLabel);
+      } else if (callMeShare >= _callMeMinShare) {
+        setState(() {
+          _prediction = _friendlyLabel(callMeLabel);
+
+          _confidence = callMeShare;
+
+          _statusMessage = 'Recognition complete!';
+        });
+
+        _saveToHistory(callMeLabel, callMeShare);
+        _speak(callMeLabel);
       } else if (okShare >= _okMinShare) {
         setState(() {
           _prediction = _friendlyLabel(okLabel);
@@ -1288,6 +1370,9 @@ class _CameraScreenState extends State<CameraScreen> {
 
       case 'ok':
         return '👌 OK';
+
+      case 'call_me':
+        return '🤙 Call Me';
 
       default:
         return label;

@@ -19,6 +19,8 @@ String friendlySignLabel(String label) {
       return '🤟 I Love You';
     case 'ok':
       return '👌 OK';
+    case 'call_me':
+      return '🤙 Call Me';
     default:
       return label;
   }
@@ -41,6 +43,8 @@ String spokenSignLabel(String label) {
       return 'I love you';
     case 'ok':
       return 'Okay';
+    case 'call_me':
+      return 'Call me';
     default:
       return label.replaceAll('_', ' ');
   }
